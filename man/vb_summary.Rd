@@ -2,7 +2,8 @@
 % Please edit documentation in R/uncertainty.R
 \name{vb_summary}
 \alias{vb_summary}
-\title{Uncertainty for a vbdf objects}
+\alias{vb_uncertainty}
+\title{Summarize uncertainty for a vbdf objects}
 \usage{
 vb_summary(
   object,
@@ -13,7 +14,21 @@ vb_summary(
   funcs = c("mean", "median", "low", "high"),
   low_ci = 0.025,
   high_ci = 0.975,
-  bin_col
+  bin_col,
+  tolerance = sqrt(.Machine$double.eps)
+)
+
+vb_uncertainty(
+  object,
+  type = c("discrete", "continuous", "binned"),
+  estimates = grep("prob|pr_turnout|pr_votedem|pr_voterep|cond_rep|net_rep",
+    names(object), value = TRUE),
+  na.rm = FALSE,
+  funcs = c("mean", "median", "low", "high"),
+  low_ci = 0.025,
+  high_ci = 0.975,
+  bin_col,
+  tolerance = sqrt(.Machine$double.eps)
 )
 }
 \arguments{
@@ -37,11 +52,14 @@ should accept a numeric vector input and return a scalar.}
 \item{high_ci}{numeric. If you include the string \code{"high"} in \code{funcs}, then use this argument to control the upper bound of the confidence interval.}
 
 \item{bin_col}{character vector naming the column(s) that define the bins. Used only when  \code{type} is \code{"binned"}.}
+
+\item{tolerance}{tolerance used when checking range of probability estimates}
 }
 \value{
 A summary object with additional columns for each combination
   of \code{estimates} and \code{funcs}.
 }
 \description{
-Uncertainty for a vbdf objects
+Summarize uncertainty for a vbdf objects. Analysis must have run with bootstrap iterations.
+\code{vb_uncertainty} is just an alias for \code{vb_summary}.
 }

@@ -1,7 +1,7 @@
 Package: blocs
 Type: Package
 Title: Estimate and Visualize Voting Blocs' Partisan Contributions
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Justin", "Grimmer", 
            email = "jgrimmer@stanford.edu", 
@@ -24,7 +24,7 @@ Description: Functions to combine data on voting blocs'
     vote contributions to the Democratic and Republican parties.
     The package also includes functions for uncertainty estimation and
     plotting. Users may define voting blocs along a discrete or continuous variable.
-    The package implements methods described in Grimmer, Marble, and Tanigawa-Lau (2022) <doi:10.31235/osf.io/c9fkg>.
+    The package implements methods described in Grimmer, Marble, and Tanigawa-Lau (2023) <doi:10.31235/osf.io/c9fkg>.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -37,9 +37,9 @@ Imports: collapse (>= 1.7.6), dplyr (>= 1.0.6), ggplot2 (>= 3.2.0), ks
         3.0.0)
 Depends: R (>= 3.6.0)
 NeedsCompilation: no
-Packaged: 2022-11-23 00:46:18 UTC; cole
+Packaged: 2023-04-02 20:40:51 UTC; cole
 Author: Justin Grimmer [aut],
   Will Marble [aut] (<https://orcid.org/0000-0001-9352-5540>),
   Cole Tanigawa-Lau [aut, cre] (<https://orcid.org/0000-0002-8656-571X>)
 Repository: CRAN
-Date/Publication: 2022-11-23 11:20:06 UTC
+Date/Publication: 2023-04-02 21:00:02 UTC

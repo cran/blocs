@@ -8,7 +8,8 @@ vb_difference(
   vbdf,
   estimates = grep("prob|pr_turnout|pr_votedem|pr_voterep|cond_rep|net_rep",
     names(vbdf), value = TRUE),
-  sort_col = "year"
+  sort_col = "year",
+  tolerance = sqrt(.Machine$double.eps)
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ which to compute differences.}
 
 \item{sort_col}{character vector naming the column(s) in \code{vbdf} to use
 for sorting before calling \link[base]{diff}.}
+
+\item{tolerance}{tolerance used when checking range of probability estimates}
 }
 \value{
 A \code{vbdf} object, plus two types of columns:

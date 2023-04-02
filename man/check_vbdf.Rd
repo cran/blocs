@@ -4,12 +4,12 @@
 \alias{check_vbdf}
 \title{Validator for class vbdf}
 \usage{
-check_vbdf(x, tol = sqrt(.Machine$double.eps))
+check_vbdf(x, tolerance = sqrt(.Machine$double.eps))
 }
 \arguments{
 \item{x}{object to check}
 
-\item{tol}{tolerance used when checking bounds of net Republican votes}
+\item{tolerance}{tolerance used when checking range of probability estimates}
 }
 \description{
 Validator for class vbdf

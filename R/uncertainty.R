@@ -44,7 +44,10 @@ new_vbsum <- function(x, bloc_var, var_type, summary_type, resamples){
 }
 
 
-#' Uncertainty for a vbdf objects
+#' Summarize uncertainty for a vbdf objects
+#'
+#' Summarize uncertainty for a vbdf objects. Analysis must have run with bootstrap iterations.
+#' \code{vb_uncertainty} is just an alias for \code{vb_summary}.
 #'
 #' @param object a \code{vbdf} object, usually the output of [vb_discrete], [vb_continuous], or [vb_difference].
 #' @param type a string naming the type of independent variable summary. Use
@@ -61,20 +64,22 @@ new_vbsum <- function(x, bloc_var, var_type, summary_type, resamples){
 #' @param bin_col character vector naming the column(s) that define the bins. Used only when  \code{type} is \code{"binned"}.
 #' @return A summary object with additional columns for each combination
 #'   of \code{estimates} and \code{funcs}.
+#' @param tolerance tolerance used when checking range of probability estimates
 #'
-#' @export
+#' @export vb_summary
 
 vb_summary <-
-    vb_uncertainty <-
     function(object, type = c("discrete", "continuous", "binned"),
              estimates = grep("prob|pr_turnout|pr_votedem|pr_voterep|cond_rep|net_rep",
                               names(object), value = TRUE),
              na.rm = FALSE,
              funcs = c("mean", "median", "low", "high"),
              low_ci = 0.025, high_ci = 0.975,
-             bin_col){
+             bin_col, tolerance = sqrt(.Machine$double.eps)){
 
-        check_vbdf(object)
+        check_vbdf(object, tolerance = tolerance)
+        if(dplyr::is.grouped_df(object)) stop("Summarizing uncertainty by group is not supported yet. Please use split-apply-combine.")
+
         if(identical(type, c("discrete", "continuous", "binned")))
             type <- get_var_type(object)
         else type <- match.arg(type, c("discrete", "binned", "continuous"))
@@ -104,7 +109,7 @@ vb_summary <-
                            dplyr::group_by(
                                dplyr::across(dplyr::all_of(
                                    c(dplyr::group_vars(object), bloc_var)))
-                               ) %>%
+                           ) %>%
                            dplyr::summarize(
                                dplyr::across(dplyr::all_of(estimates),
                                              .fns = funcs
@@ -147,7 +152,7 @@ vb_summary <-
                                )
                            )
                    }
-               )
+        )
 
         n_resamples <- length(unique(object$resample))
 
@@ -159,6 +164,10 @@ vb_summary <-
         return(out)
 
     }
+
+#' @rdname vb_summary
+#' @export
+vb_uncertainty <- vb_summary
 
 
 

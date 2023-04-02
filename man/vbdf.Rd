@@ -4,7 +4,12 @@
 \alias{vbdf}
 \title{Create a vbdf object}
 \usage{
-vbdf(data, bloc_var, var_type = c("discrete", "continuous"))
+vbdf(
+  data,
+  bloc_var,
+  var_type = c("discrete", "continuous"),
+  tolerance = sqrt(.Machine$double.eps)
+)
 }
 \arguments{
 \item{data}{data.frame of voting-bloc results to convert to a \code{vbdf} object}
@@ -12,6 +17,8 @@ vbdf(data, bloc_var, var_type = c("discrete", "continuous"))
 \item{bloc_var}{string, the name of the variable that defines the voting blocs}
 
 \item{var_type}{string, the type of variable, discrete or continuous}
+
+\item{tolerance}{tolerance used when checking range of probability estimates}
 }
 \value{
 A \code{vbdf} object.

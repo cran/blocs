@@ -15,8 +15,8 @@
 #' @param indep      string, column name of the independent variable defining
 #'   discrete voting blocs.
 #' @param dv_vote3        string, column name of the dependent variable in \code{data_vote}, coded as
-#'   follows: -1 for Democrat vote choice, 0 for no or third-party vote, 1 for
-#'   Republican vote choice.
+#'   follows: -1 for Democrat vote choice, 0 for third-party vote, 1 for
+#'   Republican vote choice, and NA for no vote.
 #' @param dv_turnout     string, column name of the dependent variable flagging
 #'   voter turnout in \code{data_turnout}. That column must be coded 0 =  no vote, 1 = voted.
 #' @param weight     optional string naming the column of sample weights.
@@ -51,17 +51,17 @@ vb_discrete <-
             stop(sprintf("%s not found in data_density", indep))
 
         if(!all(rlang::has_name(data_turnout, indep)))
-            stop(sprintf("%s not found in data_turnout\n", indep))
+            stop(sprintf("%s not found in data_turnout", indep))
         if(!rlang::has_name(data_turnout, dv_turnout))
             stop(sprintf("%s not found in data_turnout", dv_turnout))
 
         if(!all(rlang::has_name(data_vote, indep)))
-            stop(sprintf("%s not found in data_vote\n", indep))
+            stop(sprintf("%s not found in data_vote", indep))
         if(!rlang::has_name(data_vote, dv_vote3))
             stop(sprintf("%s not found in data_vote", dv_vote3))
 
         if( check_discrete & dplyr::n_distinct(collapse::get_vars(data_density, indep)) > 50)
-            stop("More than 25 unique values detected in indep. \nIf you are sure you don't want vb_continuous(), set check_discrete = FALSE.")
+            stop("More than 50 unique values detected in indep. \nIf you are sure you don't want vb_continuous(), set check_discrete = FALSE.")
 
         # Start with NULL weights = 1, but grab the col if present
         weight_density <- rep(1L, nrow(data_density))
@@ -71,15 +71,15 @@ vb_discrete <-
 
         if(!is.null(weight)) {
             if(rlang::has_name(data_density, weight))
-                weight_density <- data_density[[weight]]
+                weight_density <- c(data_density[[weight]])
             else stop(sprintf("%s not found in data_density", weight))
 
             if(rlang::has_name(data_turnout, weight))
-                weight_turnout <- data_turnout[[weight]]
+                weight_turnout <- c(data_turnout[[weight]])
             else stop(sprintf("%s not found in data_turnout", weight))
 
             if(rlang::has_name(data_vote, weight))
-                weight_vote    <- data_vote[[weight]]
+                weight_vote    <- c(data_vote[[weight]])
             else stop(sprintf("%s not found in data_vote", weight))
 
             # Check for negative weights
@@ -209,7 +209,7 @@ vb_discrete <-
         if(contains_original && !all(boot_iters == 0)){
             estim_nms <- c(prob = "density", pr_turnout = "turnout",
                            net_rep = "vote choice")
-            vbdf_orig <- dplyr::filter(results, resample == "original")
+            vbdf_orig <- collapse::fsubset(results, resample == "original")
 
             data_orig <- stats::na.omit(unique(estim_nms[names(which(!sapply(vbdf_orig, function(x) all(is.na(x)))))]))
             estim_orig <- names(estim_nms[estim_nms == data_orig])
@@ -226,7 +226,7 @@ vb_discrete <-
                               dplyr::all_of(c(indep, estim_orig)))
 
             results <-
-                dplyr::filter(results, resample != "original") %>%
+                collapse::fsubset(results, resample != "original") %>%
                 dplyr::select(-dplyr::all_of(estim_orig)) %>%
                 dplyr::left_join(vbdf_orig, by = indep)
         }
@@ -235,7 +235,8 @@ vb_discrete <-
         results <-
             collapse::fmutate(results,
                               resample = gsub("-0+", "-", resample),
-                              net_rep = prob * pr_turnout * cond_rep) %>%
+                              net_rep = prob * pr_turnout * cond_rep
+                              ) %>%
             collapse::colorderv(neworder = c("resample", indep,
                                              "prob", "pr_turnout",
                                              "pr_voterep", "pr_votedem",
@@ -333,15 +334,19 @@ calc_vote <- function(data, indep, dv, weight){
 
                 collapse::ftransform(
                     data,
-                    pr_voterep = as.numeric(get({{dv}}) ==  1),
-                    pr_votedem = as.numeric(get({{dv}}) == -1)
+                    voterep = as.numeric(get(dv) ==  1),
+                    votedem = as.numeric(get(dv) == -1)
                 ),
+
                 indep),
 
-            c("pr_voterep", "pr_votedem")
+            c("voterep", "votedem")
         )
 
     out <- collapse::fmean(cgdf, w = weight)
+    names(out)[names(out) == "voterep"] <- "pr_voterep"
+    names(out)[names(out) == "votedem"] <- "pr_votedem"
+
     out$cond_rep <- out$pr_voterep - out$pr_votedem
 
     return(out)

@@ -6,10 +6,16 @@
 
 # blocs: Estimate and Visualize Voting Blocs' Partisan Contributions
 
-This package provides several functions and classes to analyze voting blocs in U.S. elections.
+This package provides several functions to analyze voting blocs in U.S. elections, implementing the methods described in [Grimmer, Marble, and Tanigawa-Lau (2023)](https://osf.io/c9fkg/).
 
 ## Installation
 
+The blocs package is available to install from CRAN:
+``` r
+install.packages("blocs")
+```
+
+You may also install the development version from GitHub:
 ``` r
 # install.packages("devtools")
 devtools::install_github("coletl/blocs", dependencies = TRUE)

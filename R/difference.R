@@ -8,6 +8,7 @@
 #'   which to compute differences.
 #' @param sort_col  character vector naming the column(s) in \code{vbdf} to use
 #'   for sorting before calling \link[base]{diff}.
+#' @param tolerance tolerance used when checking range of probability estimates
 #'
 #' @return A \code{vbdf} object, plus two types of columns:
 #' for each column named in \code{estimates}, a column named \code{diff_*} containing the
@@ -24,13 +25,13 @@ vb_difference <-
     function(vbdf,
              estimates = grep("prob|pr_turnout|pr_votedem|pr_voterep|cond_rep|net_rep",
                               names(vbdf), value = TRUE),
-             sort_col = "year"){
+             sort_col = "year", tolerance = sqrt(.Machine$double.eps)){
 
     stopifnot(length(sort_col) == 1)
     if(length(unique(vbdf[[sort_col]])) < 2)
         stop(sprintf("Need multiple values in vbdf[[%s]] to calculate difference", sort_col))
 
-    check_vbdf(vbdf)
+    check_vbdf(vbdf, tolerance = tolerance)
     if(!rlang::has_name(vbdf, sort_col)) stop(sprintf("Sorting column %s not found in data", sort_col))
 
     bloc_var     <- get_bloc_var(vbdf)
